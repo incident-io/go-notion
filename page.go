@@ -294,6 +294,8 @@ func (p *Page) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		page.Properties = props
+	case "":
+		// No parent type, so no properties.
 	default:
 		return fmt.Errorf("unknown page parent type %q", dto.Parent.Type)
 	}
