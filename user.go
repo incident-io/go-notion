@@ -31,18 +31,18 @@ type BotOwner struct {
 // BaseUser contains the fields that are always returned for user objects.
 // See: https://developers.notion.com/reference/user#where-user-objects-appear-in-the-api
 type BaseUser struct {
-	ID string `json:"id"`
+	ID string `json:"id,omitempty"`
 }
 
 type User struct {
 	BaseUser
 
-	Type      UserType `json:"type"`
-	Name      string   `json:"name"`
-	AvatarURL string   `json:"avatar_url"`
+	Type      UserType `json:"type,omitempty"`
+	Name      string   `json:"name,omitempty"`
+	AvatarURL string   `json:"avatar_url,omitempty"`
 
-	Person *Person `json:"person"`
-	Bot    *Bot    `json:"bot"`
+	Person *Person `json:"person,omitempty"`
+	Bot    *Bot    `json:"bot,omitempty"`
 }
 
 // ListUsersResponse contains results (users) and pagination data returned from a list request.
