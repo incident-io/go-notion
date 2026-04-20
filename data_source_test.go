@@ -163,6 +163,42 @@ func TestQueryDataSource(t *testing.T) {
 			},
 		},
 		{
+			name: "page with data_source_id parent decodes",
+			respBody: `{
+				"object": "list",
+				"results": [
+					{
+						"object": "page",
+						"id": "7c6b1c95-de50-45ca-94e6-af1d9fd295ab",
+						"created_time": "2021-05-18T17:50:22.371Z",
+						"last_edited_time": "2021-05-18T17:50:22.371Z",
+						"parent": { "type": "data_source_id", "data_source_id": "d1111111-1111-1111-1111-111111111111" },
+						"archived": false,
+						"url": "https://www.notion.so/7c6b1c95de5045ca94e6af1d9fd295ab",
+						"properties": {}
+					}
+				],
+				"has_more": false,
+				"next_cursor": null
+			}`,
+			respStatusCode: http.StatusOK,
+			expResponse: notion.DataSourceQueryResponse{
+				Results: []notion.Page{
+					{
+						ID:             "7c6b1c95-de50-45ca-94e6-af1d9fd295ab",
+						CreatedTime:    mustParseTime(time.RFC3339Nano, "2021-05-18T17:50:22.371Z"),
+						LastEditedTime: mustParseTime(time.RFC3339Nano, "2021-05-18T17:50:22.371Z"),
+						Parent: notion.Parent{
+							Type:         notion.ParentTypeDataSource,
+							DataSourceID: "d1111111-1111-1111-1111-111111111111",
+						},
+						URL:        "https://www.notion.so/7c6b1c95de5045ca94e6af1d9fd295ab",
+						Properties: notion.DatabasePageProperties{},
+					},
+				},
+			},
+		},
+		{
 			name:           "error response",
 			respBody:       `{"object":"error","status":400,"code":"validation_error","message":"bad filter"}`,
 			respStatusCode: http.StatusBadRequest,
