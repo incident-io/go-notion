@@ -23,6 +23,9 @@ type Database struct {
 	Cover          *Cover             `json:"cover,omitempty"`
 	Archived       bool               `json:"archived"`
 	IsInline       bool               `json:"is_inline"`
+
+	// Populated by FindDatabaseByIDV2 only.
+	DataSources []DataSourceReference `json:"data_sources,omitempty"`
 }
 
 // DatabaseProperties is a mapping of properties defined on a database.
