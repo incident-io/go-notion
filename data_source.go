@@ -77,6 +77,34 @@ func (c *Client) FindDatabaseByIDV2(ctx context.Context, databaseID string) (db 
 	return db, nil
 }
 
+// FindDataSourceByID fetches a data source by ID. Pins
+// Notion-Version 2026-03-11 — required for the data-source endpoints.
+// See: https://developers.notion.com/reference/retrieve-a-data-source
+func (c *Client) FindDataSourceByID(ctx context.Context, id string) (ds DataSource, err error) {
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/data_sources/%v", id), nil)
+	if err != nil {
+		return DataSource{}, fmt.Errorf("notion: invalid request: %w", err)
+	}
+	req.Header.Set("Notion-Version", "2026-03-11")
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return DataSource{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return DataSource{}, fmt.Errorf("notion: failed to find data source: %w", parseErrorResponse(res))
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&ds)
+	if err != nil {
+		return DataSource{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+	}
+
+	return ds, nil
+}
+
 // Pins Notion-Version 2025-09-03.
 // See: https://developers.notion.com/reference/query-a-data-source
 func (c *Client) QueryDataSource(ctx context.Context, id string, query *DataSourceQuery) (result DataSourceQueryResponse, err error) {
