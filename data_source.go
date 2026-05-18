@@ -6,12 +6,30 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // Populates Database.DataSources.
 type DataSourceReference struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+// DataSource is a table inside a Notion database (2025-09-03+ model).
+// Each database contains one or more data sources; pages live under data sources.
+// Returned by /v1/search when filtered with `object: "data_source"`.
+// See: https://developers.notion.com/reference/data-source
+type DataSource struct {
+	ID             string     `json:"id"`
+	CreatedTime    time.Time  `json:"created_time"`
+	LastEditedTime time.Time  `json:"last_edited_time"`
+	URL            string     `json:"url"`
+	Title          []RichText `json:"title"`
+	Icon           *Icon      `json:"icon,omitempty"`
+	Parent         Parent     `json:"parent"`
+	IsInline       bool       `json:"is_inline"`
+	Archived       bool       `json:"archived"`
+	InTrash        bool       `json:"in_trash"`
 }
 
 // See: https://developers.notion.com/reference/query-a-data-source

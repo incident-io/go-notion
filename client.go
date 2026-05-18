@@ -592,8 +592,8 @@ func (c *Client) ListUsers(ctx context.Context, query *PaginationQuery) (result 
 	return result, nil
 }
 
-// Search fetches all pages and child pages that are shared with the integration. Optionally uses query, filter and
-// pagination options.
+// Search fetches all pages and data sources that are shared with the integration. Optionally uses query, filter and
+// pagination options. Pins Notion-Version 2026-03-11 — filter values are "page" or "data_source".
 // See: https://developers.notion.com/reference/post-search
 func (c *Client) Search(ctx context.Context, opts *SearchOpts) (result SearchResponse, err error) {
 	body := &bytes.Buffer{}
@@ -609,6 +609,7 @@ func (c *Client) Search(ctx context.Context, opts *SearchOpts) (result SearchRes
 	if err != nil {
 		return SearchResponse{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
+	req.Header.Set("Notion-Version", "2026-03-11")
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
