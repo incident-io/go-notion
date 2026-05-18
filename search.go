@@ -26,7 +26,7 @@ type SearchFilter struct {
 }
 
 type SearchResponse struct {
-	// Results are either pages or databases. See `SearchResponse.UnmarshalJSON`.
+	// Results are either pages or data sources. See `SearchResults.UnmarshalJSON`.
 	Results    SearchResults `json:"results"`
 	HasMore    bool          `json:"has_more"`
 	NextCursor *string       `json:"next_cursor"`
@@ -57,13 +57,13 @@ func (sr *SearchResults) UnmarshalJSON(b []byte) error {
 		}
 
 		switch obj.Object {
-		case "database":
-			var db Database
-			err := json.Unmarshal(rawResult, &db)
+		case "data_source":
+			var ds DataSource
+			err := json.Unmarshal(rawResult, &ds)
 			if err != nil {
 				return err
 			}
-			results[i] = db
+			results[i] = ds
 		case "page":
 			var page Page
 			err := json.Unmarshal(rawResult, &page)
