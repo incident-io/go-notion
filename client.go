@@ -226,6 +226,36 @@ func (c *Client) FindPageByID(ctx context.Context, id string) (page Page, err er
 	return page, nil
 }
 
+// FindPageByIDV2 fetches a page by ID using Notion-Version 2026-03-11. On
+// that version the parent of a page inside a database is reported as
+// ParentTypeDataSource (with Parent.DataSourceID set) rather than
+// ParentTypeDatabase, which is what callers need to nest pages under their
+// data source.
+func (c *Client) FindPageByIDV2(ctx context.Context, id string) (page Page, err error) {
+	req, err := c.newRequest(ctx, http.MethodGet, "/pages/"+id, nil)
+	if err != nil {
+		return Page{}, fmt.Errorf("notion: invalid request: %w", err)
+	}
+	req.Header.Set("Notion-Version", "2026-03-11")
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return Page{}, fmt.Errorf("notion: failed to find page: %w", parseErrorResponse(res))
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&page)
+	if err != nil {
+		return Page{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+	}
+
+	return page, nil
+}
+
 // CreatePage creates a new page in the specified database or as a child of an existing page.
 // See: https://developers.notion.com/reference/post-page
 func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (page Page, err error) {
